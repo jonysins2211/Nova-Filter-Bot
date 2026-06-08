@@ -430,7 +430,21 @@ async def cb_handler(client: Client, query: CallbackQuery):
             user = query.message.from_user.id
         if int(user) != 0 and query.from_user.id != int(user):
             return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
-        await query.answer(url=f"https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file_id}")
+        mc = f"file_{query.message.chat.id}_{file_id}"
+        btn = await is_subscribed(client, query)
+        if btn:
+            btn.append(
+                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+            )
+            await query.answer()
+            await query.message.reply_photo(
+                photo=random.choice(PICS),
+                caption=f"👋 Hello {query.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+                reply_markup=InlineKeyboardMarkup(btn),
+                parse_mode=enums.ParseMode.HTML
+            )
+            return
+        await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
 
     elif query.data.startswith("get_del_file"):
         ident, group_id, file_id = query.data.split("#")
@@ -467,7 +481,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             
     elif query.data.startswith("checksub"):
         ident, mc = query.data.split("#")
-       # settings = await get_settings(int(mc.split("_", 2)[1]))
         btn = await is_subscribed(client, query)
         if btn:
             await query.answer(f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.", show_alert=True)
@@ -1204,4 +1217,5 @@ async def advantage_spell_chok(message, s):
         await message.delete()
     except:
         pass
+
 
