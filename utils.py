@@ -96,21 +96,38 @@ async def is_subscribed(bot, query):
     for id in stg.get('FORCE_SUB_CHANNELS').split(' '):
         chat = await bot.get_chat(int(id))
         try:
-            await bot.get_chat_member(int(id), query.from_user.id)
+            member = await bot.get_chat_member(int(id), query.from_user.id)
+            if member.status in [ChatMemberStatus.LEFT, ChatMemberStatus.BANNED, ChatMemberStatus.RESTRICTED]:
+                btn.append(
+                    [InlineKeyboardButton(f'Join : {chat.title}', url=chat.invite_link)]
+                )
         except UserNotParticipant:
             btn.append(
                 [InlineKeyboardButton(f'Join : {chat.title}', url=chat.invite_link)]
             )
+        except (ChatAdminRequired, PeerIdInvalid):
+            pass
+        except Exception:
+            pass
     if stg and stg.get('REQUEST_FORCE_SUB_CHANNELS') and not await db.find_join_req(query.from_user.id):
         id = stg.get('REQUEST_FORCE_SUB_CHANNELS')
         chat = await bot.get_chat(int(id))
         try:
-            await bot.get_chat_member(int(id), query.from_user.id)
+            member = await bot.get_chat_member(int(id), query.from_user.id)
+            if member.status in [ChatMemberStatus.LEFT, ChatMemberStatus.BANNED, ChatMemberStatus.RESTRICTED]:
+                url = await bot.create_chat_invite_link(int(id), creates_join_request=True)
+                btn.append(
+                    [InlineKeyboardButton(f'Request : {chat.title}', url=url.invite_link)]
+                )
         except UserNotParticipant:
             url = await bot.create_chat_invite_link(int(id), creates_join_request=True)
             btn.append(
                 [InlineKeyboardButton(f'Request : {chat.title}', url=url.invite_link)]
             )
+        except (ChatAdminRequired, PeerIdInvalid):
+            pass
+        except Exception:
+            pass
     return btn
 
 
@@ -432,3 +449,4 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
+
