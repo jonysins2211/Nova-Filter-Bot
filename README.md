@@ -66,7 +66,6 @@
 * `FILES_DATABASE_URL`: MongoDB URL for 1st files database. Get this value from [MongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `DATA_DATABASE_URL`: for save user, group, etc data.
 * `LOG_CHANNEL` : A channel to log the activities of bot. add channel id and Make sure bot is an admin in the channel.
-* `SUPPORT_GROUP`: Add your support group id
 * `BIN_CHANNEL`: A channel to the stream and download feature, add channel id and make bot admin in channel.
 * `URL`: Add you deployed bot app link or vps IP address
 ### Optional Variables

@@ -15,10 +15,25 @@ from utils import get_plan_name, get_poster, is_premium, upload_image, get_setti
 import PTN
 
 
+
+@Client.on_message(filters.command("repair_mode") & filters.incoming)
+async def repair_mode_cmd(client, message):
+    if not message.from_user or message.from_user.id not in ADMINS:
+        return await message.reply_text("You are not authorized to use this command.")
+    
+    args = message.text.split()
+    if len(args) != 2 or args[1].lower() not in ["on", "off"]:
+        return await message.reply_text("Usage: `/repair_mode on` or `/repair_mode off`")
+    
+    if args[1].lower() == "on":
+        await db.set_repair_mode(True)
+        await message.reply_text("Repair Mode activated successfully.")
+    else:
+        await db.set_repair_mode(False)
+        await message.reply_text("Repair Mode deactivated successfully.")
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
-    if message.from_user.id not in ADMINS and await db.get_repair_mode():
-        return await message.reply_text("⚠️ <b>Sorry for the inconvenience, we are under Maintenance. We'll be back soon!</b>")
         
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         if not await db.get_chat(message.chat.id):
@@ -350,29 +365,19 @@ async def stats(bot, message):
 
 
 async def get_grp_stg(group_id):
-    settings = await get_settings(group_id)
     btn = [[
-        InlineKeyboardButton('Edit IMDb template', callback_data=f'imdb_setgs#{group_id}')
+        InlineKeyboardButton('Shortlink Settings', callback_data=f'shortlink_menu#{group_id}'),
+        InlineKeyboardButton('IMDb Settings', callback_data=f'imdb_menu#{group_id}')
     ],[
-        InlineKeyboardButton('Edit Shortlink', callback_data=f'shortlink_setgs#{group_id}')
+        InlineKeyboardButton('Welcome Settings', callback_data=f'welcome_menu#{group_id}'),
+        InlineKeyboardButton('Caption Settings', callback_data=f'caption_menu#{group_id}')
     ],[
-        InlineKeyboardButton('Edit File Caption', callback_data=f'caption_setgs#{group_id}')
+        InlineKeyboardButton('Auto Delete Settings', callback_data=f'auto_delete_menu#{group_id}'),
+        InlineKeyboardButton('Tutorial Settings', callback_data=f'tutorial_setgs#{group_id}')
     ],[
-        InlineKeyboardButton('Edit Welcome', callback_data=f'welcome_setgs#{group_id}')
+        InlineKeyboardButton('Miscellaneous Settings', callback_data=f'misc_menu#{group_id}')
     ],[
-        InlineKeyboardButton('Edit tutorial link', callback_data=f'tutorial_setgs#{group_id}')
-    ],[
-        InlineKeyboardButton(f'IMDb Poster {"✅" if settings["imdb"] else "❌"}', callback_data=f'bool_setgs#imdb#{settings["imdb"]}#{group_id}')
-    ],[
-        InlineKeyboardButton(f'Spelling Check {"✅" if settings["spell_check"] else "❌"}', callback_data=f'bool_setgs#spell_check#{settings["spell_check"]}#{group_id}')
-    ],[
-        InlineKeyboardButton(f"Auto Delete - {get_readable_time(DELETE_TIME)}" if settings["auto_delete"] else "Auto Delete ❌", callback_data=f'bool_setgs#auto_delete#{settings["auto_delete"]}#{group_id}')
-    ],[
-        InlineKeyboardButton(f'Welcome {"✅" if settings["welcome"] else "❌"}', callback_data=f'bool_setgs#welcome#{settings["welcome"]}#{group_id}')
-    ],[
-        InlineKeyboardButton(f'Shortlink {"✅" if settings["shortlink"] else "❌"}', callback_data=f'bool_setgs#shortlink#{settings["shortlink"]}#{group_id}')
-    ],[
-        InlineKeyboardButton(f"Result Page - Link" if settings["links"] else "Result Page - Button", callback_data=f'bool_setgs#links#{settings["links"]}#{group_id}')
+        InlineKeyboardButton('Close', callback_data='close_data')
     ]]
     return btn
     
@@ -583,75 +588,7 @@ async def prm_list(bot, message):
     await tx.edit_text(t)
 
 
-@Client.on_message(filters.command('set_fsub') & filters.user(ADMINS))
-async def set_fsub(bot, message):
-    try:
-        _, ids = message.text.split(' ', 1)
-    except ValueError:
-        return await message.reply('usage: /set_fsub -100xxx -100xxx')
-    title = ""
-    for id in ids.split(' '):
-        try:
-            chat = await bot.get_chat(int(id))
-            title += f'{chat.title}\n'
-        except Exception as e:
-            return await message.reply(f'ERROR: {e}')
-    await db.update_bot_sttgs('FORCE_SUB_CHANNELS', ids)
-    await message.reply(f'added force subscribe channels: {title}')
 
-        
-
-@Client.on_message(filters.command('set_req_fsub') & filters.user(ADMINS))
-async def set_req_fsub(bot, message):
-    try:
-        _, id = message.text.split(' ', 1)
-    except ValueError:
-        return await message.reply('usage: /set_req_fsub -100xxx')
-    try:
-        chat = await bot.get_chat(int(id))
-    except Exception as e:
-        return await message.reply(f'ERROR: {e}')
-    await db.update_bot_sttgs('REQUEST_FORCE_SUB_CHANNELS', id)
-    await message.reply(f'added request force subscribe channel: {chat.title}')
-
-
-@Client.on_message(filters.command('off_auto_filter') & filters.user(ADMINS))
-async def off_auto_filter(bot, message):
-    await db.update_bot_sttgs('AUTO_FILTER', False)
-    await message.reply('Successfully turned off auto filter for all groups')
-
-
-@Client.on_message(filters.command('on_auto_filter') & filters.user(ADMINS))
-async def on_auto_filter(bot, message):
-    await db.update_bot_sttgs('AUTO_FILTER', True)
-    await message.reply('Successfully turned on auto filter for all groups')
-
-
-
-@Client.on_message(filters.command('off_pm_search') & filters.user(ADMINS))
-async def off_pm_search(bot, message):
-    await db.update_bot_sttgs('PM_SEARCH', False)
-    await message.reply('Successfully turned off pm search for all users')
-
-
-@Client.on_message(filters.command('on_pm_search') & filters.user(ADMINS))
-async def on_pm_search(bot, message):
-    await db.update_bot_sttgs('PM_SEARCH', True)
-    await message.reply('Successfully turned on pm search for all users')
-
-
-@Client.on_message(filters.command('repairmode') & filters.user(ADMINS))
-async def repairmode(bot, message):
-    args = message.text.split()
-    if len(args) < 2 or args[1].lower() not in ['on', 'off']:
-        return await message.reply("<b>Repair Mode Usage:</b>\n<code>/repairmode on</code>  — Enable maintenance mode\n<code>/repairmode off</code> — Disable maintenance mode")
-    mode = args[1].lower()
-    if mode == 'on':
-        await db.set_repair_mode(True)
-        await message.reply("<b>Repair Mode Enabled!</b>\n\nUsers will see:\n<i>Sorry for the inconvenience, we are under Maintenance. We'll be back soon!</i>\n\nUse <code>/repairmode off</code> to disable.")
-    else:
-        await db.set_repair_mode(False)
-        await message.reply("<b>Repair Mode Disabled!</b>\n\nBot is back online. Users can search and get files normally.")
 
 
 @Client.on_message(filters.command('request'))

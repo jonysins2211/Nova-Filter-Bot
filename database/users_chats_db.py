@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import BOT_ID, ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
+from info import TUTORIAL_NAME, BOT_ID, ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE, DELETE_TIME
 from datetime import datetime, timedelta
 
 files_db_client = AsyncIOMotorClient(FILES_DATABASE_URL)
@@ -19,6 +19,7 @@ class Database:
         'imdb': IMDB,
         'spell_check': SPELL_CHECK,
         'auto_delete': AUTO_DELETE,
+        'auto_delete_time': DELETE_TIME,
         'welcome': WELCOME,
         'welcome_text': WELCOME_TEXT,
         'template': IMDB_TEMPLATE,
@@ -27,6 +28,7 @@ class Database:
         'api': SHORTLINK_API,
         'shortlink': SHORTLINK,
         'tutorial': TUTORIAL,
+        'tutorial_name': TUTORIAL_NAME,
         'links': LINK_MODE
     }
 
@@ -154,7 +156,10 @@ class Database:
         await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         
     async def update_settings(self, id, settings):
-        await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})      
+        await self.grp.update_one({'id': int(id)}, 
+            {'$set': {'settings': settings}, 
+             '$setOnInsert': {'title': str(id), 'chat_status': dict(is_disabled=False, reason="")}}, 
+            upsert=True)      
     
     async def get_settings(self, id):
         chat = await self.grp.find_one({'id': int(id)})
@@ -238,18 +243,6 @@ class Database:
         else:
             return []
         
-    async def update_bot_sttgs(self, var, val):
-        existing = await self.stg.find_one({'id': BOT_ID})
-        if not existing:
-            await self.stg.insert_one({'id': BOT_ID, var: val})
-        else:
-            await self.stg.update_one({'id': BOT_ID}, {'$set': {var: val}})
-
-    async def get_bot_sttgs(self):
-        stg = await self.stg.find_one({'id': BOT_ID})
-        if not stg:
-            return {}
-        return stg
 
     async def get_repair_mode(self):
         stg = await self.stg.find_one({'id': BOT_ID})
@@ -258,7 +251,7 @@ class Database:
         return stg.get('REPAIR_MODE', False)
 
     async def set_repair_mode(self, value: bool):
-        await self.update_bot_sttgs('REPAIR_MODE', value)
+        await self.stg.update_one({'id': BOT_ID}, {'$set': {'REPAIR_MODE': value}}, upsert=True)
 
     async def add_movie_req(self, req_id, user_id, movie_name):
         await self.movie_req.insert_one({'req_id': req_id, 'user_id': user_id, 'movie_name': movie_name})
