@@ -19,13 +19,13 @@ except ImportError:
     pass
 
 from pyrogram import types, Client, StopPropagation
-from pyrogram.handlers import MessageHandler
+from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 
 from web import web_app
-from info import URL, INDEX_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
+from info import URL, INDEX_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL, FORCE_SUB_CHANNELS, REQUEST_FORCE_SUB_CHANNEL, AUTO_FILTER, PM_SEARCH
 from utils import temp, get_readable_time, check_premium
 from database.users_chats_db import db
 from database.ia_filterdb import setup_database
@@ -43,7 +43,23 @@ class Bot(Client):
             plugins={"root": "plugins"}
         )
         self.listeners = {}
+        self.add_handler(MessageHandler(self._repair_mode_message_handler), group=-2)
+        self.add_handler(CallbackQueryHandler(self._repair_mode_cb_handler), group=-2)
         self.add_handler(MessageHandler(self._listener_handler), group=-1)
+
+    async def _repair_mode_message_handler(self, client: Client, message: types.Message):
+        if await db.get_repair_mode():
+            if message.from_user and message.from_user.id in ADMINS:
+                return
+            await message.reply("Bot is currently under maintenance / repair mode.")
+            raise StopPropagation
+            
+    async def _repair_mode_cb_handler(self, client: Client, query: types.CallbackQuery):
+        if await db.get_repair_mode():
+            if query.from_user and query.from_user.id in ADMINS:
+                return
+            await query.answer("Bot is currently under maintenance / repair mode.", show_alert=True)
+            raise StopPropagation
 
     async def _listener_handler(self, client: Client, message: types.Message):
         if not message.chat or not message.from_user:

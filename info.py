@@ -76,32 +76,39 @@ else:
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1002077293491')
 if len(SUPPORT_GROUP) == 0:
-    logger.error('SUPPORT_GROUP is missing, exiting now')
-    exit()
+    SUPPORT_GROUP = None
+    logger.warning('SUPPORT_GROUP is missing')
 else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
 DATA_DATABASE_URL = environ.get('DATA_DATABASE_URL', "")
-if len(DATA_DATABASE_URL) == 0:
-    logger.error('DATA_DATABASE_URL is missing, exiting now')
-    exit()
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files') 
 FILES_DATABASE_URL = environ.get('FILES_DATABASE_URL', "")
-if len(FILES_DATABASE_URL) == 0:
-    logger.error('FILES_DATABASE_URL is missing, exiting now')
-    exit()
 SECOND_FILES_DATABASE_URL = environ.get('SECOND_FILES_DATABASE_URL', "")
+DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
+
+if len(DATA_DATABASE_URL) == 0 and len(FILES_DATABASE_URL) == 0:
+    logger.error('FILES_DATABASE_URL and DATA_DATABASE_URL are missing. You must provide at least one of them. Exiting now.')
+    exit()
+elif len(DATA_DATABASE_URL) == 0:
+    DATA_DATABASE_URL = FILES_DATABASE_URL
+    logger.warning('DATA_DATABASE_URL is missing, using FILES_DATABASE_URL as fallback.')
+elif len(FILES_DATABASE_URL) == 0:
+    FILES_DATABASE_URL = DATA_DATABASE_URL
+    logger.warning('FILES_DATABASE_URL is missing, using DATA_DATABASE_URL as fallback.')
+
 if len(SECOND_FILES_DATABASE_URL) == 0:
     logger.info('SECOND_FILES_DATABASE_URL is empty')
-DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
+
 
 # Links
 SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/ML_FILES')
 UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/Movie_loverzz')
 FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/Cinema_Bay')
-TUTORIAL = environ.get("TUTORIAL", "https://t.me/ML_FILES/33")
-VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/ML_Files/33")
+TUTORIAL = environ.get("TUTORIAL", "https://t.me/Nova_Filter_Official")
+TUTORIAL_NAME = environ.get("TUTORIAL_NAME", "Tutorial")
+VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/Nova_Filter_Official")
 
 # Bot settings
 TIME_ZONE = environ.get('TIME_ZONE', 'Asia/Colombo') # Replace your time zone
@@ -130,6 +137,12 @@ LINK_MODE = is_enabled("LINK_MODE", True)
 IMDB = is_enabled('IMDB', True)
 SPELL_CHECK = is_enabled("SPELL_CHECK", True)
 SHORTLINK = is_enabled('SHORTLINK', False)
+AUTO_FILTER = is_enabled('AUTO_FILTER', True)
+PM_SEARCH = is_enabled('PM_SEARCH', True)
+
+# bot string settings
+FORCE_SUB_CHANNELS = environ.get('FORCE_SUB_CHANNELS', '')  # For multiple channels, separate channel IDs with spaces. Example: "-100xxxxx -100xxxxx -100xxxxx"
+REQUEST_FORCE_SUB_CHANNEL = environ.get('REQUEST_FORCE_SUB_CHANNEL', '')   
 
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)

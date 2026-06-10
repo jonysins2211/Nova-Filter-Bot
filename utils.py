@@ -1,6 +1,5 @@
-from pyrogram.errors import UserNotParticipant, FloodWait, ChatAdminRequired, PeerIdInvalid
-from pyrogram.enums import ChatMemberStatus
-from info import LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM, TIME_ZONE, TMDB_API_KEY, USE_CAPTION_FILTER, UPDATES_SEND_CHANNEL, FILMS_LINK
+from pyrogram.errors import UserNotParticipant, FloodWait
+from info import FORCE_SUB_CHANNELS, LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM, TIME_ZONE, TMDB_API_KEY, USE_CAPTION_FILTER, UPDATES_SEND_CHANNEL, FILMS_LINK, REQUEST_FORCE_SUB_CHANNEL
 import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from pyrogram import enums
@@ -90,27 +89,17 @@ async def is_subscribed(bot, query):
     btn = []
     if await is_premium(query.from_user.id, bot):
         return btn
-    stg = await db.get_bot_sttgs()
-    if not stg or not stg.get('FORCE_SUB_CHANNELS'):
-        return btn
-    for id in stg.get('FORCE_SUB_CHANNELS').split(' '):
-        chat = await bot.get_chat(int(id))
-        try:
-            member = await bot.get_chat_member(int(id), query.from_user.id)
-            if member.status in [ChatMemberStatus.LEFT, ChatMemberStatus.BANNED, ChatMemberStatus.RESTRICTED]:
+    if FORCE_SUB_CHANNELS:
+        for id in FORCE_SUB_CHANNELS.split(' '):
+            chat = await bot.get_chat(int(id))
+            try:
+                await bot.get_chat_member(int(id), query.from_user.id)
+            except UserNotParticipant:
                 btn.append(
                     [InlineKeyboardButton(f'Join : {chat.title}', url=chat.invite_link)]
                 )
-        except UserNotParticipant:
-            btn.append(
-                [InlineKeyboardButton(f'Join : {chat.title}', url=chat.invite_link)]
-            )
-        except (ChatAdminRequired, PeerIdInvalid):
-            pass
-        except Exception:
-            pass
-    if stg and stg.get('REQUEST_FORCE_SUB_CHANNELS') and not await db.find_join_req(query.from_user.id):
-        id = stg.get('REQUEST_FORCE_SUB_CHANNELS')
+    if REQUEST_FORCE_SUB_CHANNEL and not await db.find_join_req(query.from_user.id):
+        id = REQUEST_FORCE_SUB_CHANNEL
         chat = await bot.get_chat(int(id))
         try:
             member = await bot.get_chat_member(int(id), query.from_user.id)

@@ -4,7 +4,7 @@ import sys
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
-from info import ADMINS, LOG_CHANNEL, PICS, SUPPORT_LINK, UPDATES_LINK
+from info import ADMINS, LOG_CHANNEL, PICS, SUPPORT_LINK, UPDATES_LINK, REQUEST_FORCE_SUB_CHANNEL
 from database.users_chats_db import db
 from utils import temp, get_settings
 from Script import script
@@ -243,8 +243,7 @@ async def list_chats(bot, message):
 
 @Client.on_chat_join_request()
 async def join_reqs(client, message: ChatJoinRequest):
-    stg = await db.get_bot_sttgs()
-    if message.chat.id == int(stg.get('REQUEST_FORCE_SUB_CHANNELS')):
+    if REQUEST_FORCE_SUB_CHANNEL and message.chat.id == int(REQUEST_FORCE_SUB_CHANNEL):
         if not db.find_join_req(message.from_user.id):
             await db.add_join_req(message.from_user.id)
 
