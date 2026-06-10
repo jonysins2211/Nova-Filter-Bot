@@ -105,10 +105,10 @@ if len(SECOND_FILES_DATABASE_URL) == 0:
 # Links
 SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/ML_FILES')
 UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/Movie_loverzz')
-FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/Cinema_Bay')
-TUTORIAL = environ.get("TUTORIAL", "https://t.me/Nova_Filter_Official")
+FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/Movie_Loverzz')
+TUTORIAL = environ.get("TUTORIAL", "https://t.me/Nova_Filter_Officia")
 TUTORIAL_NAME = environ.get("TUTORIAL_NAME", "Tutorial")
-VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/Nova_Filter_Official")
+VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/Nova_Filter_fficial")
 
 # Bot settings
 TIME_ZONE = environ.get('TIME_ZONE', 'Asia/Colombo') # Replace your time zone
@@ -141,7 +141,7 @@ AUTO_FILTER = is_enabled('AUTO_FILTER', True)
 PM_SEARCH = is_enabled('PM_SEARCH', True)
 
 # bot string settings
-FORCE_SUB_CHANNELS = environ.get('FORCE_SUB_CHANNELS', '')  # For multiple channels, separate channel IDs with spaces. Example: "-100xxxxx -100xxxxx -100xxxxx"
+FORCE_SUB_CHANNELS = environ.get('FORCE_SUB_CHANNELS', '-1002918900365 -1001547011153')  # For multiple channels, separate channel IDs with spaces. Example: "-100xxxxx -100xxxxx -100xxxxx"
 REQUEST_FORCE_SUB_CHANNEL = environ.get('REQUEST_FORCE_SUB_CHANNEL', '')   
 
 # for stream
