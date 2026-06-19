@@ -150,16 +150,16 @@ async def next_page(bot, query):
                 [InlineKeyboardButton(lang, callback_data=f"languages#{key}#{req}#{offset}"),
                 InlineKeyboardButton(qual, callback_data=f"quality#{key}#{req}#{offset}")]
             )
-    btn.insert(1,
-            [InlineKeyboardButton('🗳 Tutorial 🗳', url=VERIFY_TUTORIAL)]
-    )
+
     if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'))]
+        btn.insert(1,
+            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}')),
+             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
         )
     else:
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")]
+        btn.insert(1,
+            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}"),
+             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
         )
     btn.append(
         [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
@@ -346,8 +346,7 @@ async def advantage_spoll_choker(bot, query):
         k = (search, files)
         await auto_filter(bot, query, s, k)
     else:
-        k = await query.message.edit(f"👋 Hello {query.from_user.mention},\n\nI don't find <b>'{search}'</b> in my database. 😔")
-        await bot.send_message(LOG_CHANNEL, f"#No_Result\n\nRequester: {query.from_user.mention}\nContent: {search}")
+        k = await query.message.edit(f"👋 Hello {query.from_user.mention},\n\nI don't find <b>'{search}'</b> in my database. 😔\n\nYou can send a request using the /request command.")
         await asyncio.sleep(60)
         await k.delete()
         try:
@@ -528,18 +527,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +", url=f'http://t.me/{temp.U_NAME}?startgroup=start', style=enums.ButtonStyle.PRIMARY)
         ],[
             InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK),
-            InlineKeyboardButton('🧑‍💻 ꜱᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
+            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
         ],[
             InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help'),
-            InlineKeyboardButton('🔎 ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
             InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
         ],[
-            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")
-        ],[
-            InlineKeyboardButton('🌐 Mini WebApp 🌐', style=enums.ButtonStyle.SUCCESS, web_app=WebAppInfo(url=URL))
+            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium"),
+            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
         ],[
             InlineKeyboardButton('🎬 Popular Movie 🎬', url="https://www.themoviedb.org/movie"),
             InlineKeyboardButton('📺 Popular TV Shows 📺', url="https://www.themoviedb.org/tv")
+        ],[
+            InlineKeyboardButton('🌐 Mini WebApp 🌐', style=enums.ButtonStyle.SUCCESS, web_app=WebAppInfo(url=URL))
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.edit_message_media(
@@ -692,7 +691,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             btn = [[
                 InlineKeyboardButton(f'Auto Delete {"✅" if settings["auto_delete"] else "❌"}', callback_data=f'bool_setgs#auto_delete#{settings["auto_delete"]}#{grp_id}')
             ],[
-                InlineKeyboardButton(f'Set Time ({time_str})', callback_data=f'set_auto_delete#{grp_id}'),
+                InlineKeyboardButton(f'Set Time', callback_data=f'set_auto_delete#{grp_id}'),
                 InlineKeyboardButton('Default Time', callback_data=f'default_auto_delete#{grp_id}')
             ],[
                 InlineKeyboardButton('Back', callback_data=f'back_setgs#{grp_id}')
@@ -870,8 +869,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             return await query.answer("You not admin in this group.", show_alert=True)
         settings = await get_settings(int(grp_id))
         btn = [[
-            InlineKeyboardButton('Set Tutorial Link', callback_data=f'set_tutorial#{grp_id}'),
-            InlineKeyboardButton('Set Tutorial Name', callback_data=f'set_tutorial_name#{grp_id}')
+            InlineKeyboardButton('Set Tutorial Link', callback_data=f'set_link_tutorial#{grp_id}'),
+            InlineKeyboardButton('Set Tutorial Name', callback_data=f'set_name_tutorial#{grp_id}')
         ],[
             InlineKeyboardButton('Default Tutorial', callback_data=f'default_tutorial#{grp_id}')
         ],[
@@ -879,7 +878,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         await query.message.edit(f'<b>Tutorial Settings</b>\n\nLink: {settings.get("tutorial", TUTORIAL)}\nName: {settings.get("tutorial_name", TUTORIAL_NAME)}', reply_markup=InlineKeyboardMarkup(btn), link_preview_options=LinkPreviewOptions(is_disabled=True))
         
-    elif query.data.startswith("set_tutorial"):
+    elif query.data.startswith("set_link_tutorial"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
         if not await is_check_admin(client, int(grp_id), userid):
@@ -901,7 +900,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await m.delete()
         await query.message.reply('Successfully changed tutorial link', reply_markup=InlineKeyboardMarkup(btn))
 
-    elif query.data.startswith("set_tutorial_name"):
+    elif query.data.startswith("set_name_tutorial"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
         if not await is_check_admin(client, int(grp_id), userid):
@@ -1235,16 +1234,16 @@ async def auto_filter(client, msg, s, spoll=False):
                 [InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
                 InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
             )
-    btn.insert(1,
-            [InlineKeyboardButton('🗳 Tutorial 🗳', url=VERIFY_TUTORIAL)]
-    )
+
     if settings['shortlink'] and not await is_premium(message.from_user.id, client):
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}'))]
+        btn.insert(1,
+            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}')),
+             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
         )
     else:
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")]
+        btn.insert(1,
+            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}"),
+             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
         )
     btn.append(
         [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
@@ -1268,7 +1267,8 @@ async def auto_filter(client, msg, s, spoll=False):
             url=imdb['url'],
             languages=imdb['languages'],
             countries=imdb['countries'],
-            **locals()
+            mention=message.from_user.mention,
+            group_title=message.chat.title,
         )
     else:
         cap = f"<b>💭 ʜᴇʏ {message.from_user.mention},\n♻️ ʜᴇʀᴇ ɪ ꜰᴏᴜɴᴅ ꜰᴏʀ ʏᴏᴜʀ sᴇᴀʀᴄʜ {search}...</b>"
@@ -1324,7 +1324,6 @@ async def advantage_spell_chok(message, s):
         return
     if not movies:
         n = await s.edit_text(text=script.NOT_FILE_TXT.format(message.from_user.mention, search), reply_markup=InlineKeyboardMarkup(btn))
-        await temp.BOT.send_message(LOG_CHANNEL, f"#No_Result\n\nRequester: {message.from_user.mention}\nContent: {search}")
         await asyncio.sleep(60)
         await n.delete()
         try:

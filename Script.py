@@ -46,7 +46,10 @@ I can't find the <b>{}</b> in my database! 🥲
 
 👉 Google Search and check your spelling is correct.
 👉 Please read the Instructions to get better results.
-👉 Or not been released yet."""
+👉 Or not been released yet.
+
+You can also send a request using the /request command.
+"""
     
     IMDB_TEMPLATE = """✅ I Found: <code>{query}</code>
 
@@ -57,8 +60,8 @@ I can't find the <b>{}</b> in my database! 🥲
 ☀️ Languages: {languages}
 📀 RunTime: {runtime} Minutes
 
-🗣 Requested by: {message.from_user.mention}
-©️ Powered by: <b>{message.chat.title}</b>"""
+🗣 Requested by: {mention}
+©️ Powered by: <b>{group_title}</b>"""
 
     FILE_CAPTION = """<i>{file_name}</i>
 

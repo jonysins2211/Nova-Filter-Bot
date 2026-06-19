@@ -94,7 +94,7 @@ class Bot(Client):
     async def start(self, **kwargs):
         logger.info('Setting up your database, please wait a moment...')
         await setup_database()
-        logger.info('Successfully setup the database!')
+        logger.info('Successfully setup the database!, Now starting the bot...')
         await super().start()
         temp.START_TIME = time.time()
         b_users, b_chats = await db.get_banned()
