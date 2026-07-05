@@ -1,5 +1,5 @@
 from pyrogram.errors import UserNotParticipant, FloodWait
-from info import FORCE_SUB_CHANNELS, LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM, TIME_ZONE, TMDB_API_KEY, USE_CAPTION_FILTER, UPDATES_SEND_CHANNEL, FILMS_LINK, REQUEST_FORCE_SUB_CHANNEL
+from info import FORCE_SUB_CHANNELS, LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM, TIME_ZONE, TMDB_API_KEY, USE_CAPTION_FILTER, UPDATES_SEND_CHANNEL, FILMS_LINK, REQUEST_FORCE_SUB_CHANNEL, URL
 import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from pyrogram import enums
@@ -8,6 +8,7 @@ from datetime import datetime
 from database.users_chats_db import db
 from shortzy import Shortzy
 import requests, pytz
+import secrets
 from Script import script
 
 
@@ -377,10 +378,19 @@ def get_size(size):
     return "%.2f %s" % (size, units[i])
 
 
+async def create_masked_link(real_url):
+    for _ in range(5):
+        hash_id = secrets.token_hex(16)
+        if not await db.get_masked_link(hash_id):
+            await db.add_masked_link(hash_id, real_url)
+            return f"{URL.rstrip('/')}/r/{hash_id}"
+    raise RuntimeError("Failed to generate a unique masked link token")
+
+
 async def get_shortlink(url, api, link):
     shortzy = Shortzy(api_key=api, base_site=url)
-    link = await shortzy.convert(link)
-    return link
+    real_url = await shortzy.convert(link)
+    return await create_masked_link(real_url)
 
 def get_readable_time(seconds):
     periods = [('d', 86400), ('h', 3600), ('m', 60), ('s', 1)]
