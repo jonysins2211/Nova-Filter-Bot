@@ -10,3 +10,5 @@ yt-dlp
 httpx
 motor
 parse-torrent-title
+fuzzywuzzy
+python-Levenshtein

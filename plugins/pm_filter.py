@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from info import AUTO_FILTER, PM_SEARCH, VERIFY_TUTORIAL, IS_PREMIUM, PICS, TUTORIAL, TUTORIAL_NAME, SHORTLINK_API, SHORTLINK_URL, OWNER_USERNAME, SECOND_FILES_DATABASE_URL, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from pyrogram.types import ReplyParameters, WebAppInfo, PreCheckoutQuery, Message, LabeledPrice, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto, LinkPreviewOptions
 from pyrogram import Client, filters, enums
+from fuzzywuzzy import process
 from utils import get_plan_name, handle_next_back, is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
 from database.users_chats_db import db
 from database.ia_filterdb import delete_files, db_count_documents, second_db_count_documents, get_search_results
@@ -1415,6 +1416,30 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 
+async def ai_spell_check(chat_id, wrong_name):
+    movies = await get_poster(wrong_name, bulk=True)
+    if not movies:
+        return None
+
+    movie_list = [movie.get('title') for movie in movies if movie.get('title')]
+    if not movie_list:
+        return None
+
+    for _ in range(min(5, len(movie_list))):
+        closest_match = process.extractOne(wrong_name, movie_list)
+        if not closest_match or closest_match[1] <= 80:
+            return None
+
+        movie = closest_match[0]
+        files = await get_search_results(movie)
+        if files:
+            return movie
+
+        movie_list.remove(movie)
+
+    return None
+
+
 async def auto_filter(client, msg, s, spoll=False):
     if not spoll:
         message = msg
@@ -1428,6 +1453,13 @@ async def auto_filter(client, msg, s, spoll=False):
             QUERY_CACHE[cache_key] = files
         if not files:
             if settings["spell_check"]:
+                await s.edit_text('<b>Ai is Checking For Your Spelling. Please Wait.</b>')
+                is_misspelled = await ai_spell_check(chat_id=message.chat.id, wrong_name=search)
+                if is_misspelled:
+                    await s.edit_text(f'<b>Ai Suggested <code>{is_misspelled}</code>\nSo I am Searching for <code>{is_misspelled}</code></b>')
+                    await asyncio.sleep(2)
+                    message.text = is_misspelled
+                    return await auto_filter(client, message, s)
                 await advantage_spell_chok(message, s)
             else:
                 await s.edit(f'I cant find {search}')
