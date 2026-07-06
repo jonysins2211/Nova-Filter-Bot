@@ -222,7 +222,7 @@ async def next_page(bot, query):
         
     if total <= MAX_BTN:
         btn.append(
-            [InlineKeyboardButton("🚫 No more pages 🚫", callback_data="buttons")]
+            [InlineKeyboardButton("🚫 No more pages 🚫", callback_data="buttons", style=enums.ButtonStyle.DANGER)]
         )
     elif n_offset == 0:
         btn.append(
@@ -247,21 +247,21 @@ async def next_page(bot, query):
     seas = "📁 sᴇᴀsᴏɴ" if select.get('season', 'any') == 'any' else f"✔️ Season {select['season']}"
     epis = "🎬 ᴇᴘɪsᴏᴅᴇ" if select.get('episode', 'any') == 'any' else f"✔️ Episode {select['episode']}"
     if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
-        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'))
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'), style=enums.ButtonStyle.SUCCESS)
     else:
-        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}", style=enums.ButtonStyle.SUCCESS)
 
     btn.insert(0,
-                [InlineKeyboardButton(epis, callback_data=f"episode#{key}#{req}#{offset}"),
+                [InlineKeyboardButton(epis, callback_data=f"episode#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY),
                  send_all_button]
             )
     btn.insert(1,
-                [InlineKeyboardButton(qual, callback_data=f"quality#{key}#{req}#{offset}"),
-                 InlineKeyboardButton(lang, callback_data=f"languages#{key}#{req}#{offset}"),
-                 InlineKeyboardButton(seas, callback_data=f"season#{key}#{req}#{offset}")]
+                [InlineKeyboardButton(qual, callback_data=f"quality#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY),
+                 InlineKeyboardButton(lang, callback_data=f"languages#{key}#{req}#{offset}", style=enums.ButtonStyle.SUCCESS),
+                 InlineKeyboardButton(seas, callback_data=f"season#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY)]
             )
     btn.append(
-        [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
+        [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium", style=enums.ButtonStyle.SUCCESS)]
     )
 
     await query.message.edit_text(cap + files_link + del_msg, reply_markup=InlineKeyboardMarkup(btn), link_preview_options=LinkPreviewOptions(is_disabled=True), parse_mode=enums.ParseMode.HTML)
@@ -694,8 +694,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         watch = f"{URL}watch/{msg.id}"
         download = f"{URL}download/{msg.id}"
         btn=[[
-            InlineKeyboardButton("ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ", url=watch),
-            InlineKeyboardButton("ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ", url=download)
+            InlineKeyboardButton("ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ", url=watch, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton("ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ", url=download, style=enums.ButtonStyle.SUCCESS)
         ],[
             InlineKeyboardButton('❌ ᴄʟᴏsᴇ ❌', callback_data='close_data')
         ]]
@@ -712,7 +712,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if btn:
             await query.answer(f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.", show_alert=True)
             btn.append(
-                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}", style=enums.ButtonStyle.DANGER)]
             )
             await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
             return
@@ -768,14 +768,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
             InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +", url=f'http://t.me/{temp.U_NAME}?startgroup=start', style=enums.ButtonStyle.PRIMARY)
         ],[
-            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK),
-            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
+            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK, style=enums.ButtonStyle.SUCCESS)
         ],[
-            InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help'),
-            InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
+            InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help', style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about', style=enums.ButtonStyle.SUCCESS)
         ],[
-            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium"),
-            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
+            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium", style=enums.ButtonStyle.SUCCESS),
+            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat='', style=enums.ButtonStyle.PRIMARY),
         ],[
          #   InlineKeyboardButton('🎬 Popular Movie 🎬', url="https://www.themoviedb.org/movie"),
          #   InlineKeyboardButton('📺 Popular TV Shows 📺', url="https://www.themoviedb.org/tv")
@@ -1469,25 +1469,25 @@ async def auto_filter(client, msg, s, spoll=False):
         )
     else:
         btn.append(
-            [InlineKeyboardButton("🚫 No more pages 🚫", callback_data="buttons")]
+            [InlineKeyboardButton("🚫 No more pages 🚫", callback_data="buttons", style=enums.ButtonStyle.DANGER)]
         )
     
     if settings['shortlink'] and not await is_premium(message.from_user.id, client):
-        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}'))
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}'), style=enums.ButtonStyle.SUCCESS)
     else:
-        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}", style=enums.ButtonStyle.SUCCESS)
 
     btn.insert(0,
-                [InlineKeyboardButton("🎬 ᴇᴘɪsᴏᴅᴇ", callback_data=f"episode#{key}#{req}#{offset}"),
+                [InlineKeyboardButton("🎬 ᴇᴘɪsᴏᴅᴇ", callback_data=f"episode#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY),
                  send_all_button]
             )
     btn.insert(1,
-                [InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}"),
-                 InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
-                 InlineKeyboardButton("📁 sᴇᴀsᴏɴ", callback_data=f"season#{key}#{req}#{offset}")]
+                [InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY),
+                 InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}", style=enums.ButtonStyle.SUCCESS),
+                 InlineKeyboardButton("📁 sᴇᴀsᴏɴ", callback_data=f"season#{key}#{req}#{offset}", style=enums.ButtonStyle.PRIMARY)]
             )
     btn.append(
-        [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
+        [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium", style=enums.ButtonStyle.SUCCESS)]
     )
 
     imdb = await get_poster(search, file=(files[0])['file_name']) if settings["imdb"] else None

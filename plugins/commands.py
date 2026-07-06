@@ -44,8 +44,8 @@ async def start(client, message):
         wish = get_wish()
         user = message.from_user.mention if message.from_user else "Dear"
         btn = [[
-            InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
-            InlineKeyboardButton('💡 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ 💡', url=SUPPORT_LINK)
+            InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('💡 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ 💡', url=SUPPORT_LINK, style=enums.ButtonStyle.SUCCESS)
         ]]
         await message.reply(text=f"<b>ʜᴇʏ {user}, <i>{wish}</i>\nʜᴏᴡ ᴄᴀɴ ɪ ʜᴇʟᴘ ʏᴏᴜ??</b>", reply_markup=InlineKeyboardMarkup(btn))
         return 
@@ -68,14 +68,14 @@ async def start(client, message):
         buttons = [[
             InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +", url=f'http://t.me/{temp.U_NAME}?startgroup=start', style=enums.ButtonStyle.PRIMARY)
         ],[
-            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK),
-            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
+            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK, style=enums.ButtonStyle.SUCCESS)
         ],[
-            InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help'),
-            InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
+            InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help', style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about', style=enums.ButtonStyle.SUCCESS)
         ],[
-            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium"),
-            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
+            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium", style=enums.ButtonStyle.SUCCESS),
+            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat='', style=enums.ButtonStyle.PRIMARY),
         ],[
             #InlineKeyboardButton('🎬 Popular Movie 🎬', url="https://www.themoviedb.org/movie"),
          #   InlineKeyboardButton('📺 Popular TV Shows 📺', url="https://www.themoviedb.org/tv")
@@ -139,9 +139,9 @@ async def start(client, message):
         await update_verify_status(message.from_user.id, verify_token=token, link="" if mc == 'inline_verify' else mc)
         link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://t.me/{temp.U_NAME}?start=verify_{token}')
         btn = [[
-            InlineKeyboardButton("🧿 Verify 🧿", url=link)
+            InlineKeyboardButton("🧿 Verify 🧿", url=link, style=enums.ButtonStyle.SUCCESS)
         ],[
-            InlineKeyboardButton('🗳 Tutorial 🗳', url=VERIFY_TUTORIAL)
+            InlineKeyboardButton('🗳 Tutorial 🗳', url=VERIFY_TUTORIAL, style=enums.ButtonStyle.PRIMARY)
         ]]
         await message.reply("You not verified today! Kindly verify now. 🔐", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
         return
@@ -149,7 +149,7 @@ async def start(client, message):
     btn = await is_subscribed(client, message)
     if btn:
         btn.append(
-            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}", style=enums.ButtonStyle.DANGER)]
         )
         reply_markup = InlineKeyboardMarkup(btn)
         await message.reply_photo(
@@ -177,7 +177,7 @@ async def start(client, message):
             )      
             if IS_STREAM:
                 btn = [[
-                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}")
+                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}", style=enums.ButtonStyle.SUCCESS)
                 ],[
             #        InlineKeyboardButton('⁉️ ᴄʟᴏsᴇ ⁉️', callback_data='close_data')
                 ]]
@@ -234,7 +234,7 @@ async def start(client, message):
     )
     if IS_STREAM:
         btn = [[
-            InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file_id}")
+            InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file_id}", style=enums.ButtonStyle.SUCCESS)
         ],[
         #    InlineKeyboardButton('⁉️ ᴄʟᴏsᴇ ⁉️', callback_data='close_data')
         ]]
@@ -300,8 +300,8 @@ async def link(bot, message):
                 InlineKeyboardButton("🌐 Smart Player 🌐", url=vidking_url)
             ])
         btn.append([
-            InlineKeyboardButton("ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ", url=watch),
-            InlineKeyboardButton("ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ", url=download)
+            InlineKeyboardButton("ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ", url=watch, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton("ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ", url=download, style=enums.ButtonStyle.SUCCESS)
         ])
         btn.append([
         #    InlineKeyboardButton('❌ ᴄʟᴏsᴇ ❌', callback_data='close_data')

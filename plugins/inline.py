@@ -1,4 +1,4 @@
-from pyrogram import Client
+from pyrogram import Client, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from utils import get_size, temp, get_verify_status, is_subscribed, is_premium, handle_next_back
 from database.ia_filterdb import get_search_results
@@ -83,9 +83,9 @@ async def inline_search(bot, query):
 
 def get_reply_markup(s):
     buttons = [[
-        InlineKeyboardButton('🔎 Search Again', switch_inline_query_current_chat=s or '')
+        InlineKeyboardButton('🔎 Search Again', switch_inline_query_current_chat=s or '', style=enums.ButtonStyle.PRIMARY)
     ],[
-        InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
-        InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
+        InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK, style=enums.ButtonStyle.PRIMARY),
+        InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK, style=enums.ButtonStyle.SUCCESS)
     ]]
     return InlineKeyboardMarkup(buttons)
