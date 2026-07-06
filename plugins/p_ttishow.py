@@ -244,7 +244,7 @@ async def list_chats(bot, message):
 @Client.on_chat_join_request()
 async def join_reqs(client, message: ChatJoinRequest):
     if REQUEST_FORCE_SUB_CHANNEL and message.chat.id == int(REQUEST_FORCE_SUB_CHANNEL):
-        if not db.find_join_req(message.from_user.id):
+        if not await db.find_join_req(message.from_user.id):
             await db.add_join_req(message.from_user.id)
 
 
