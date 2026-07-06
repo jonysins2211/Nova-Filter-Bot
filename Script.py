@@ -55,12 +55,11 @@ You can also send a request using the /request command.
 
 🏷 Title: <a href={url}>{title}</a>
 🎭 Genres: {genres}
-📆 Year: {year}
 🌟 Rating: {rating} / 10
 
 🗣 Requested by: {mention}</b>"""
 
-    FILE_CAPTION = """<i>{file_name}</i>"""
+    FILE_CAPTION = """<b><a href="https://t.me/Movie_loverzz">{file_caption}</a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/Movie_loverzz">[ @Movie_Loverzz ]</a></b>"""
 
     WELCOME_TEXT = """👋 Hello {mention}, Welcome to {title} group! 💞"""
 
