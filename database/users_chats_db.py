@@ -42,7 +42,6 @@ class Database:
     
     default_prm = {
         'expire': '',
-        'trial': False,
         'plan': '',
         'premium': False
     }

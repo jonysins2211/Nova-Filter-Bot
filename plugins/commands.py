@@ -469,7 +469,6 @@ async def myplan(client, message):
     mp = await db.get_plan(message.from_user.id)
     if not await is_premium(message.from_user.id, client):
         btn = [[
-            InlineKeyboardButton('Activate Trial', callback_data='activate_trial'),
             InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
         ]]
         return await message.reply('You dont have any premium plan, please use /plan to activate plan', reply_markup=InlineKeyboardMarkup(btn))
@@ -482,8 +481,6 @@ async def plan(client, message):
     if not IS_PREMIUM:
         return await message.reply('Premium feature was disabled by admin')
     btn = [[
-        InlineKeyboardButton('Activate Trial', callback_data='activate_trial')
-    ],[
         InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
     ]]
     plans_list = []

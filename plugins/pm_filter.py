@@ -725,18 +725,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "instructions":
         await query.answer("Movie request format.\nExample:\nBlack Adam or Black Adam 2022\n\nTV Reries request format.\nExample:\nLoki S01E01 or Loki S01 E01\n\nDon't use symbols.", show_alert=True)
 
-    elif query.data == 'activate_trial':
-        mp = await db.get_plan(query.from_user.id)
-        if mp['trial']:
-            return await query.message.edit('You already used trial, use /plan to activate plan')
-        ex = datetime.now() + timedelta(hours=1)
-        mp['expire'] = ex
-        mp['trial'] = True
-        mp['plan'] = '1 hour'
-        mp['premium'] = True
-        await db.update_plan(query.from_user.id, mp)
-        await query.message.edit(f"Congratulations! Your activated trial for 1 hour\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
-
     elif query.data == 'activate_plan':
         btn = [[
             InlineKeyboardButton('💳 Pay using WebApp', web_app=WebAppInfo(url=URL + 'activate-plan'))
