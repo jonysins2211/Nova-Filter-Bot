@@ -1433,7 +1433,7 @@ async def ai_spell_check(chat_id, wrong_name):
         movie = closest_match[0]
         files = await get_search_results(movie)
         if files:
-            return movie
+            return movie, files
 
         movie_list.remove(movie)
 
@@ -1454,16 +1454,20 @@ async def auto_filter(client, msg, s, spoll=False):
         if not files:
             if settings["spell_check"]:
                 await s.edit_text('<b>Ai is Checking For Your Spelling. Please Wait.</b>')
-                is_misspelled = await ai_spell_check(chat_id=message.chat.id, wrong_name=search)
-                if is_misspelled:
-                    await s.edit_text(f'<b>Ai Suggested <code>{is_misspelled}</code>\nSo I am Searching for <code>{is_misspelled}</code></b>')
+                spell_result = await ai_spell_check(chat_id=message.chat.id, wrong_name=search)
+                if spell_result:
+                    corrected_search, corrected_files = spell_result
+                    await s.edit_text(f'<b>Ai Suggested <code>{corrected_search}</code>\nSo I am Searching for <code>{corrected_search}</code></b>')
                     await asyncio.sleep(2)
-                    message.text = is_misspelled
-                    return await auto_filter(client, message, s)
-                await advantage_spell_chok(message, s)
+                    search = corrected_search
+                    files = corrected_files
+                    QUERY_CACHE[corrected_search.lower()] = corrected_files
+                else:
+                    await advantage_spell_chok(message, s)
+                    return
             else:
                 await s.edit(f'I cant find {search}')
-            return
+                return
     else:
         settings = await get_settings(msg.message.chat.id)
         message = msg.message.reply_to_message  # msg will be callback query

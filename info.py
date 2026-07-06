@@ -178,9 +178,9 @@ PAYMENT_ID = "movieloverz11220@okhdfcbank"  # add your payment id like upi id or
 
 # Format -- Days: ['CURRENCY', Price]
 PREMIUM_PLANS = {
-    30: ['₹', 25], 
-    2: ['₹', 50],
-    6: ['₹', 150],
+    30: ['₹', 25],
+    60: ['₹', 50],
+    180: ['₹', 150],
     365: ['₹', 300]
 }
 PAYMENT_TYPE = "UPI"  # can be changed to "Crypto (TRC20)" or "PayPal" or etc....
