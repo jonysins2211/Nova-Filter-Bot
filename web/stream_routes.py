@@ -8,12 +8,79 @@ from web.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
 from web.utils.render_template import media_watch, error_tmplt, webapp_template, payment_template, no_tmdb_template
 from database.ia_filterdb import get_search_results
 from database.users_chats_db import db
-import json, io, aiohttp
+import json, io, aiohttp, html
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 routes = web.RouteTableDef()
 
 TMDB_BASE = "https://api.themoviedb.org/3"
+
+
+def masked_link_page(title, message, button_html=""):
+    safe_title = html.escape(title)
+    safe_message = html.escape(message)
+    return f"""
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{safe_title}</title>
+  <style>
+    body {{ margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; background: #0f172a; color: #e5e7eb; }}
+    .card {{ width: min(92vw, 460px); padding: 32px; border-radius: 22px; background: #111827; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }}
+    h1 {{ margin: 0 0 14px; font-size: 28px; }}
+    p {{ margin: 0 0 24px; color: #cbd5e1; line-height: 1.5; }}
+    a.button {{ display: inline-block; padding: 14px 22px; border-radius: 999px; background: #22c55e; color: #06130a; text-decoration: none; font-weight: 700; }}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>{safe_title}</h1>
+    <p>{safe_message}</p>
+    {button_html}
+  </main>
+</body>
+</html>
+"""
+
+
+@routes.get("/r/{hash_id}", allow_head=True)
+async def masked_shortlink_handler(request):
+    hash_id = request.match_info['hash_id']
+    link = await db.get_masked_link(hash_id)
+    if not link:
+        return web.Response(
+            text=masked_link_page("Link Not Found", "This masked link is invalid or no longer exists."),
+            content_type='text/html',
+            status=404
+        )
+
+    if link.get('used'):
+        return web.Response(
+            text=masked_link_page("Link Expired", "This one-time link was already used. Please request a new one."),
+            content_type='text/html',
+            status=410
+        )
+
+    real_url = link['real_url']
+    user_agent = request.headers.get('User-Agent', '').lower()
+    if 'telegram' in user_agent:
+        scheme = 'http' if real_url.startswith('http://') else 'https'
+        intent_url = html.escape(real_url.replace('https://', '', 1).replace('http://', '', 1), quote=True)
+        button = f'<a class="button" href="intent://{intent_url}#Intent;scheme={scheme};package=com.android.chrome;end">Open in Chrome</a>'
+        return web.Response(
+            text=masked_link_page("Open in Chrome", "For security, open this link in an external Chrome browser to continue.", button),
+            content_type='text/html'
+        )
+
+    if not await db.mark_masked_link_used(hash_id):
+        return web.Response(
+            text=masked_link_page("Link Expired", "This one-time link was already used. Please request a new one."),
+            content_type='text/html',
+            status=410
+        )
+    raise web.HTTPFound(real_url)
 
 @routes.get("/watch/{message_id}")
 async def watch_handler(request):

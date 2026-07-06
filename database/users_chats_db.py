@@ -55,6 +55,7 @@ class Database:
         self.con = data_db.Connections
         self.stg = data_db.Settings
         self.movie_req = data_db.MovieRequests
+        self.masked_links = data_db.MaskedLinks
 
     def new_user(self, id, name):
         return dict(
@@ -243,6 +244,24 @@ class Database:
         else:
             return []
         
+
+    async def add_masked_link(self, hash_id, real_url):
+        await self.masked_links.insert_one({
+            'hash_id': hash_id,
+            'real_url': real_url,
+            'used': False,
+            'created_at': datetime.now()
+        })
+
+    async def get_masked_link(self, hash_id):
+        return await self.masked_links.find_one({'hash_id': hash_id})
+
+    async def mark_masked_link_used(self, hash_id):
+        result = await self.masked_links.update_one(
+            {'hash_id': hash_id, 'used': False},
+            {'$set': {'used': True, 'used_at': datetime.now()}}
+        )
+        return result.modified_count > 0
 
     async def get_repair_mode(self):
         stg = await self.stg.find_one({'id': BOT_ID})
