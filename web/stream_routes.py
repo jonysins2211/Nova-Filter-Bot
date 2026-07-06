@@ -286,26 +286,42 @@ async def repair_status_handler(request):
 
 
 async def media_download(request, message_id: int):
-    range_header = request.headers.get('Range', 0)
+    range_header = request.headers.get('Range')
     media_msg = await temp.BOT.get_messages(BIN_CHANNEL, message_id)
     media = getattr(media_msg, media_msg.media.value, None)
     file_size = media.file_size
 
     if range_header:
-        from_bytes, until_bytes = range_header.replace('bytes=', '').split('-')
-        from_bytes = int(from_bytes)
-        until_bytes = int(until_bytes) if until_bytes else file_size - 1
+        byte_range = range_header.replace('bytes=', '', 1).split('-', 1)
+        start, end = byte_range[0].strip(), byte_range[1].strip()
+        if start:
+            from_bytes = int(start)
+            until_bytes = int(end) if end else file_size - 1
+        else:
+            suffix_length = int(end)
+            from_bytes = max(file_size - suffix_length, 0)
+            until_bytes = file_size - 1
     else:
-        from_bytes = request.http_range.start or 0
-        until_bytes = request.http_range.stop or file_size - 1
+        from_bytes = 0
+        until_bytes = file_size - 1
 
-    req_length = until_bytes - from_bytes
+    until_bytes = min(until_bytes, file_size - 1)
+    if from_bytes < 0 or from_bytes >= file_size or from_bytes > until_bytes:
+        return web.Response(
+            status=416,
+            headers={
+                "Content-Range": f"bytes */{file_size}",
+                "Accept-Ranges": "bytes",
+            }
+        )
+
+    req_length = until_bytes - from_bytes + 1
 
     new_chunk_size = await chunk_size(req_length)
     offset = await offset_fix(from_bytes, new_chunk_size)
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
-    part_count = math.ceil(req_length / new_chunk_size)
+    part_count = math.ceil((first_part_cut + req_length) / new_chunk_size)
     body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
@@ -320,12 +336,12 @@ async def media_download(request, message_id: int):
         headers={
             "Content-Type": mime_type,
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
-            "Content-Disposition": f'attachment; filename="{file_name}"',
+            "Content-Disposition": f'inline; filename="{file_name}"',
             "Accept-Ranges": "bytes",
+            "Cache-Control": "no-store",
         }
     )
 
-    if return_resp.status == 200:
-        return_resp.headers.add("Content-Length", str(file_size))
+    return_resp.headers.add("Content-Length", str(req_length))
 
     return return_resp

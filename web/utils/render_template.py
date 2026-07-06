@@ -2,6 +2,7 @@ from info import BIN_CHANNEL, URL
 from utils import temp
 from web.utils.custom_dl import TGCustomYield
 import urllib.parse
+import mimetypes
 import html
 
 
@@ -1402,7 +1403,10 @@ watch_tmplt = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <video src="{src}" class="player" playsinline controls></video>
+            <video class="player" playsinline webkit-playsinline controls preload="metadata" crossorigin="anonymous">
+                <source src="{src}" type="{mime_type}">
+                Your browser does not support HTML5 video playback.
+            </video>
         </div>
     </div>
 
@@ -1418,7 +1422,7 @@ watch_tmplt = """<!DOCTYPE html>
         </a>
 
         <!-- VLC -->
-        <a href="vlc://{src}" class="xbtn btn-vlc">
+        <a href="intent:{src}#Intent;action=android.intent.action.VIEW;type={mime_type};package=org.videolan.vlc;S.title={file_name_attr};end" class="xbtn btn-vlc js-external" data-fallback="vlc://{src}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
@@ -1426,7 +1430,7 @@ watch_tmplt = """<!DOCTYPE html>
         </a>
 
         <!-- MX Player -->
-        <a href="intent:{src}#Intent;package=com.mxtech.videoplayer.ad;end" class="xbtn btn-mx">
+        <a href="intent:{src}#Intent;action=android.intent.action.VIEW;type={mime_type};package=com.mxtech.videoplayer.ad;S.title={file_name_attr};end" class="xbtn btn-mx js-external" data-fallback="intent:{src}#Intent;action=android.intent.action.VIEW;type={mime_type};package=com.mxtech.videoplayer.pro;S.title={file_name_attr};end">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polygon points="10 8 16 12 10 16 10 8"/>
@@ -1435,7 +1439,7 @@ watch_tmplt = """<!DOCTYPE html>
         </a>
 
         <!-- 1DM -->
-        <a href="intent:{src}#Intent;package=idm.internet.download.manager;end" class="xbtn btn-1dm">
+        <a href="intent:{src}#Intent;action=android.intent.action.VIEW;type={mime_type};package=idm.internet.download.manager;S.title={file_name_attr};end" class="xbtn btn-1dm">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="8 12 12 16 16 12"/>
@@ -1482,17 +1486,24 @@ document.addEventListener('DOMContentLoaded', () => {
     videoEl.addEventListener('canplay', hideSkel);
     
     // Core HTML5 error events
-    ['error', 'abort', 'stalled'].forEach(evt => {
+    ['error', 'abort'].forEach(evt => {
         videoEl.addEventListener(evt, () => {
             if (videoEl.error || videoEl.networkState === 3) showError();
+        });
+    });
+
+    document.querySelectorAll('.js-external').forEach(link => {
+        link.addEventListener('click', () => {
+            const fallback = link.dataset.fallback;
+            if (fallback) setTimeout(() => { window.location.href = fallback; }, 900);
         });
     });
     
     // Fallback timeout for unresponsive streams
     let loadTimeout = setTimeout(() => {
-        if (videoEl.readyState === 0) showError();
+        if (videoEl.readyState === 0 && videoEl.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) showError();
         hideSkel();
-    }, 12000);
+    }, 30000);
     
     videoEl.addEventListener('playing', () => clearTimeout(loadTimeout));
 });
@@ -1934,10 +1945,15 @@ async def media_watch(message_id):
     tag = media.mime_type.split('/')[0].strip()
     if tag == 'video':
         heading = html.escape(f'Watch — {media.file_name}')
+        file_name = html.escape(media.file_name or 'Video')
+        file_name_attr = html.escape(media.file_name or 'Video', quote=True)
+        mime_type = html.escape(media.mime_type or mimetypes.guess_type(media.file_name or '')[0] or 'video/mp4', quote=True)
         html_ = (watch_tmplt
-                 .replace('{heading}',   heading)
-                 .replace('{file_name}', media.file_name)
-                 .replace('{src}',       src))
+                 .replace('{heading}',        heading)
+                 .replace('{file_name}',      file_name)
+                 .replace('{file_name_attr}', file_name_attr)
+                 .replace('{mime_type}',      mime_type)
+                 .replace('{src}',            src))
     else:
         html_ = error_tmplt
     return html_
