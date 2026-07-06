@@ -258,25 +258,20 @@ async def next_page(bot, query):
     qual = "🔍 ǫᴜᴀʟɪᴛʏ" if select.get('qual', 'any') == 'any' else f"✔️ {select['qual'].title()}"
     seas = "📁 sᴇᴀsᴏɴ" if select.get('season', 'any') == 'any' else f"✔️ Season {select['season']}"
     epis = "🎬 ᴇᴘɪsᴏᴅᴇ" if select.get('episode', 'any') == 'any' else f"✔️ Episode {select['episode']}"
+    if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'))
+    else:
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")
+
     btn.insert(0,
-                [InlineKeyboardButton(lang, callback_data=f"languages#{key}#{req}#{offset}"),
-                InlineKeyboardButton(qual, callback_data=f"quality#{key}#{req}#{offset}")]
+                [InlineKeyboardButton(epis, callback_data=f"episode#{key}#{req}#{offset}"),
+                 send_all_button]
             )
     btn.insert(1,
-                [InlineKeyboardButton(seas, callback_data=f"season#{key}#{req}#{offset}"),
-                InlineKeyboardButton(epis, callback_data=f"episode#{key}#{req}#{offset}")]
+                [InlineKeyboardButton(qual, callback_data=f"quality#{key}#{req}#{offset}"),
+                 InlineKeyboardButton(lang, callback_data=f"languages#{key}#{req}#{offset}"),
+                 InlineKeyboardButton(seas, callback_data=f"season#{key}#{req}#{offset}")]
             )
-
-    if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}')),
-             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
-        )
-    else:
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}"),
-             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
-        )
     btn.append(
         [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
     )
@@ -1501,25 +1496,20 @@ async def auto_filter(client, msg, s, spoll=False):
             [InlineKeyboardButton("🚫 No more pages 🚫", callback_data="buttons")]
         )
     
+    if settings['shortlink'] and not await is_premium(message.from_user.id, client):
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}'))
+    else:
+        send_all_button = InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")
+
     btn.insert(0,
-                [InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
-                InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
+                [InlineKeyboardButton("🎬 ᴇᴘɪsᴏᴅᴇ", callback_data=f"episode#{key}#{req}#{offset}"),
+                 send_all_button]
             )
     btn.insert(1,
-                [InlineKeyboardButton("📁 sᴇᴀsᴏɴ", callback_data=f"season#{key}#{req}#{offset}"),
-                InlineKeyboardButton("🎬 ᴇᴘɪsᴏᴅᴇ", callback_data=f"episode#{key}#{req}#{offset}")]
+                [InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}"),
+                 InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
+                 InlineKeyboardButton("📁 sᴇᴀsᴏɴ", callback_data=f"season#{key}#{req}#{offset}")]
             )
-
-    if settings['shortlink'] and not await is_premium(message.from_user.id, client):
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}')),
-             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
-        )
-    else:
-        btn.insert(2,
-            [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}"),
-             InlineKeyboardButton(settings['tutorial_name'], url=settings['tutorial'])]
-        )
     btn.append(
         [InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")]
     )
