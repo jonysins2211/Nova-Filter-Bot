@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import re
 from time import time as time_now
 import math, os
@@ -21,6 +22,7 @@ SELECT = {}
 FILES= {}
 ALL_FILES={}
 QUERY_CACHE = {}
+logger = logging.getLogger(__name__)
 
 
 def clean_filename_for_matching(filename: str) -> str:
@@ -1417,25 +1419,43 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 async def ai_spell_check(chat_id, wrong_name):
-    movies = await get_poster(wrong_name, bulk=True)
+    wrong_name = re.sub(r"\s+", " ", str(wrong_name or "")).strip()
+    if not wrong_name:
+        return None
+
+    try:
+        movies = await get_poster(wrong_name, bulk=True)
+    except Exception as e:
+        logger.exception("AI spell check poster lookup failed for %s: %s", wrong_name, e)
+        return None
+
     if not movies:
         return None
 
-    movie_list = [movie.get('title') for movie in movies if movie.get('title')]
+    movie_list = []
+    seen_titles = set()
+    for movie in movies:
+        title = movie.get('title') if isinstance(movie, dict) else None
+        if not title:
+            continue
+        normalized_title = title.strip()
+        title_key = normalized_title.lower()
+        if title_key not in seen_titles:
+            movie_list.append(normalized_title)
+            seen_titles.add(title_key)
+
     if not movie_list:
         return None
 
-    for _ in range(min(5, len(movie_list))):
-        closest_match = process.extractOne(wrong_name, movie_list)
-        if not closest_match or closest_match[1] <= 80:
-            return None
+    ranked_matches = process.extract(wrong_name, movie_list, limit=min(10, len(movie_list)))
+    for movie, score in ranked_matches:
+        token_score = process.token_set_ratio(wrong_name, movie)
+        if max(score, token_score) < 70:
+            continue
 
-        movie = closest_match[0]
         files = await get_search_results(movie)
         if files:
             return movie, files
-
-        movie_list.remove(movie)
 
     return None
 
