@@ -42,7 +42,7 @@ PORT = int(environ.get('PORT', '80'))
 PICS = (environ.get('PICS', 'https://i.postimg.cc/8C15CQ5y/1.png https://i.postimg.cc/gcNtrv0m/2.png https://i.postimg.cc/cHD71BBz/3.png https://i.postimg.cc/F1XYhY8q/4.png https://i.postimg.cc/1tNwGVxC/5.png https://i.postimg.cc/dtW30QpL/6.png https://i.postimg.cc/139dvs3c/7.png https://i.postimg.cc/QtXVtB8K/8.png https://i.postimg.cc/y8j8G1XV/9.png https://i.postimg.cc/zDF6KyJX/10.png https://i.postimg.cc/fyycVqzd/11.png https://i.postimg.cc/26ZBtBZr/13.png https://i.postimg.cc/PJn8nrWZ/14.png https://i.postimg.cc/cC7txyhz/15.png https://i.postimg.cc/kX9tjGXP/16.png https://i.postimg.cc/zXjH4NVb/17.png https://i.postimg.cc/sggGrLhn/18.png https://i.postimg.cc/y8pgYTh7/19.png')).split()
 
 # Bot Admins
-ADMINS = environ.get('ADMINS', '5493832202')
+ADMINS = environ.get('ADMINS', '949657126')
 if len(ADMINS) == 0:
     logger.error('ADMINS is missing, exiting now')
     exit()
@@ -53,20 +53,20 @@ else:
 INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split()]
 if len(INDEX_CHANNELS) == 0:
     logger.info('INDEX_CHANNELS is empty')
-LOG_CHANNEL = environ.get('LOG_CHANNEL', '')
+LOG_CHANNEL = environ.get('LOG_CHANNEL', '-1002134871596')
 if len(LOG_CHANNEL) == 0:
     logger.error('LOG_CHANNEL is missing, exiting now')
     exit()
 else:
     LOG_CHANNEL = int(LOG_CHANNEL)
-UPDATES_SEND_CHANNEL = environ.get('UPDATES_SEND_CHANNEL', '')
+UPDATES_SEND_CHANNEL = environ.get('UPDATES_SEND_CHANNEL', '-1002207550488')
 if len(UPDATES_SEND_CHANNEL) == 0:
     logger.info('UPDATES_SEND_CHANNEL is missing')
     UPDATES_SEND_CHANNEL = None
 else:
     UPDATES_SEND_CHANNEL = int(UPDATES_SEND_CHANNEL)
 
-REQUESTS_CHANNEL = environ.get('REQUESTS_CHANNEL', '')
+REQUESTS_CHANNEL = environ.get('REQUESTS_CHANNEL', '-1002134871596')
 if len(REQUESTS_CHANNEL) == 0:
     logger.info('REQUESTS_CHANNEL is missing, using LOG_CHANNEL')
     REQUESTS_CHANNEL = LOG_CHANNEL
@@ -74,7 +74,7 @@ else:
     REQUESTS_CHANNEL = int(REQUESTS_CHANNEL)
 
 # support group
-SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '')
+SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1002077293491')
 if len(SUPPORT_GROUP) == 0:
     SUPPORT_GROUP = None
     logger.warning('SUPPORT_GROUP is missing')
@@ -103,37 +103,37 @@ if len(SECOND_FILES_DATABASE_URL) == 0:
 
 
 # Links
-SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/Nova_Filter_Official')
-UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/Nova_Filter_Official')
-FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/Cinema_Bay')
-TUTORIAL = environ.get("TUTORIAL", "https://t.me/Nova_Filter_Official")
+SUPPORT_LINK = environ.get('SUPPORT_LINK', 'https://t.me/ML_FILES')
+UPDATES_LINK = environ.get('UPDATES_LINK', 'https://t.me/Movie_loverzz')
+FILMS_LINK = environ.get('FILMS_LINK', 'https://t.me/Movie_loverzz')
+TUTORIAL = environ.get("TUTORIAL", "https://t.me/ML_Files/38")
 TUTORIAL_NAME = environ.get("TUTORIAL_NAME", "Tutorial")
-VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/Nova_Filter_Official")
+VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/ML_Files/38")
 
 # Bot settings
 TIME_ZONE = environ.get('TIME_ZONE', 'Asia/Colombo') # Replace your time zone
-DELETE_TIME = int(environ.get('DELETE_TIME', 3600)) # Add time in seconds
+DELETE_TIME = int(environ.get('DELETE_TIME', 600)) # Add time in seconds
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
 MAX_BTN = int(environ.get('MAX_BTN', 8))
 LANGUAGES = [language.lower() for language in environ.get('LANGUAGES', 'hindi english telugu tamil kannada malayalam marathi punjabi').split()]
 QUALITY = [quality.lower() for quality in environ.get('QUALITY', '360p 480p 720p 1080p 2160p').split()]
 IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", script.IMDB_TEMPLATE)
 FILE_CAPTION = environ.get("FILE_CAPTION", script.FILE_CAPTION)
-SHORTLINK_URL = environ.get("SHORTLINK_URL", "mdiskshortner.link")
-SHORTLINK_API = environ.get("SHORTLINK_API", "36f1ae74ba1aa01e5bd73bdd0bc22aa915443501")
-VERIFY_EXPIRE = int(environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
+SHORTLINK_URL = environ.get("SHORTLINK_URL", "arolinks.com")
+SHORTLINK_API = environ.get("SHORTLINK_API", "b45f8f81a9b97173588484df25715cb97b4d3fb1")
+VERIFY_EXPIRE = int(environ.get('VERIFY_EXPIRE', 43200)) # Add time in seconds
 WELCOME_TEXT = environ.get("WELCOME_TEXT", script.WELCOME_TEXT)
 INDEX_EXTENSIONS = [extensions.lower() for extensions in environ.get('INDEX_EXTENSIONS', 'mp4 mkv').split()]
-PM_FILE_DELETE_TIME = int(environ.get('PM_FILE_DELETE_TIME', '3600'))
+PM_FILE_DELETE_TIME = int(environ.get('PM_FILE_DELETE_TIME', '300'))
 
 # boolean settings
 USE_CAPTION_FILTER = is_enabled('USE_CAPTION_FILTER', False)
-IS_VERIFY = is_enabled('IS_VERIFY', False)
+IS_VERIFY = is_enabled('IS_VERIFY', True)
 AUTO_DELETE = is_enabled('AUTO_DELETE', False)
 WELCOME = is_enabled('WELCOME', False)
 PROTECT_CONTENT = is_enabled('PROTECT_CONTENT', False)
 LONG_IMDB_DESCRIPTION = is_enabled("LONG_IMDB_DESCRIPTION", False)
-LINK_MODE = is_enabled("LINK_MODE", True)
+LINK_MODE = is_enabled("LINK_MODE", False)
 IMDB = is_enabled('IMDB', True)
 SPELL_CHECK = is_enabled("SPELL_CHECK", True)
 SHORTLINK = is_enabled('SHORTLINK', False)
@@ -141,18 +141,18 @@ AUTO_FILTER = is_enabled('AUTO_FILTER', True)
 PM_SEARCH = is_enabled('PM_SEARCH', True)
 
 # bot string settings
-FORCE_SUB_CHANNELS = environ.get('FORCE_SUB_CHANNELS', '')  # For multiple channels, separate channel IDs with spaces. Example: "-100xxxxx -100xxxxx -100xxxxx"
-REQUEST_FORCE_SUB_CHANNEL = environ.get('REQUEST_FORCE_SUB_CHANNEL', '')
+FORCE_SUB_CHANNELS = environ.get('FORCE_SUB_CHANNELS', '-1002918900365')  # For multiple channels, separate channel IDs with spaces. Example: "-100xxxxx -100xxxxx -100xxxxx"
+REQUEST_FORCE_SUB_CHANNEL = environ.get('REQUEST_FORCE_SUB_CHANNEL', '-1002237171878')
 
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)
-BIN_CHANNEL = environ.get("BIN_CHANNEL", "")
+BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1002134871596")
 if len(BIN_CHANNEL) == 0:
     logger.error('BIN_CHANNEL is missing, exiting now')
     exit()
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
-URL = environ.get("URL", "")
+URL = environ.get("URL", "https://movie-loverzz-bot5-18ba1d7592a6.herokuapp.com/")
 if len(URL) == 0:
     logger.error('URL is missing, exiting now')
     exit()
@@ -187,7 +187,7 @@ PAYMENT_TYPE = "UPI"  # can be changed to "Crypto (TRC20)" or "PayPal" or etc...
 
 
 # for TMDb
-TMDB_API_KEY = environ.get("TMDB_API_KEY", "")  # Get API key from here - https://www.themoviedb.org/settings/api
+TMDB_API_KEY = environ.get("TMDB_API_KEY", "1ba98a04426a253bc7cb4be687abe2ed")  # Get API key from here - https://www.themoviedb.org/settings/api
 if len(TMDB_API_KEY) == 0:
     logger.info('TMDB_API_KEY is missing')
     TMDB_API_KEY = None
