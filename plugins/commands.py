@@ -68,7 +68,7 @@ async def start(client, message):
         buttons = [[
             InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +", url=f'http://t.me/{temp.U_NAME}?startgroup=start', style=enums.ButtonStyle.PRIMARY)
         ],[
-            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK, style=enums.ButtonStyle.PRIMARY),
+            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK, style=enums.ButtonStyle.DANGER),
             InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK, style=enums.ButtonStyle.SUCCESS)
         ],[
             InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help', style=enums.ButtonStyle.PRIMARY),
@@ -177,7 +177,7 @@ async def start(client, message):
             )      
             if IS_STREAM:
                 btn = [[
-                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}", style=enums.ButtonStyle.SUCCESS)
+                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}", style=enums.ButtonStyle.PRIMARY)
                 ],[
             #        InlineKeyboardButton('⁉️ ᴄʟᴏsᴇ ⁉️', callback_data='close_data')
                 ]]
@@ -234,7 +234,7 @@ async def start(client, message):
     )
     if IS_STREAM:
         btn = [[
-            InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file_id}", style=enums.ButtonStyle.SUCCESS)
+            InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file_id}", style=enums.ButtonStyle.PRIMARY)
         ],[
         #    InlineKeyboardButton('⁉️ ᴄʟᴏsᴇ ⁉️', callback_data='close_data')
         ]]
