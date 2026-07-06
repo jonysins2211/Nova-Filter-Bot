@@ -12,7 +12,7 @@ webapp_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nova Filter Bot</title>
+    <title>MOVIE LOVERZ</title>
     <meta name="description" content="Browse trending movies and TV shows. Find and download files instantly.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -565,7 +565,7 @@ webapp_template = """
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
-    <div class="nav-logo">Nova Filter Bot</div>
+    <div class="nav-logo">MOVIE LOVERZ</div>
     <div class="nav-right">
         <button class="nav-search-toggle" id="searchToggle" onclick="openSearch()" title="Search">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -665,12 +665,12 @@ webapp_template = """
 
 <!-- PREMIUM FOOTER -->
 <footer class="site-footer">
-    <div class="footer-logo">Nova Filter Bot</div>
+    <div class="footer-logo">MOVIE LOVERZ</div>
     <div class="footer-tagline">Your premium media discovery platform</div>
     <div class="footer-divider"></div>
     <div class="footer-links">
-        <a href="https://t.me/Nova_Filter_Official" class="footer-link" target="_blank">Telegram Channel</a>
-        <a href="https://t.me/Nova_Filter_Official" class="footer-link" target="_blank">Support</a>
+        <a href="https://t.me/Movie_loverzz" class="footer-link" target="_blank">Telegram Channel</a>
+        <a href="https://t.me/movie_loverzz" class="footer-link" target="_blank">Support</a>
         <a href="https://www.themoviedb.org" class="footer-link" target="_blank">TMDB</a>
     </div>
     <div class="footer-copy">&copy; <span id="footerYear"></span> Nova Filter Bot. All rights reserved.</div>
@@ -1452,7 +1452,7 @@ watch_tmplt = """<!DOCTYPE html>
 </div>
 
 <footer>
-    <p>Powered by <a href="https://t.me/Nova_Filter_Official" class="ha-link" target="_blank" rel="noopener">Nova Filter Bot</a></p>
+    <p>Powered by <a href="https://t.me/Movie_loverzz" class="ha-link" target="_blank" rel="noopener">MOVIE LOVERZ</a></p>
 </footer>
 
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
@@ -1522,7 +1522,7 @@ error_tmplt = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error — Nova Filter Bot</title>
+    <title>Error — MOVIE LOVERZ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
     <style>
@@ -1658,7 +1658,7 @@ error_tmplt = """<!DOCTYPE html>
 <body>
 
 <header>
-    <span class="header-logo">Nova Filter Bot</span>
+    <span class="header-logo">MOVIE LOVERZ</span>
 </header>
 
 <main>
@@ -1681,7 +1681,7 @@ error_tmplt = """<!DOCTYPE html>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
         Try Again
       </button>
-      <a href="https://t.me/Nova_Filter_Official" class="ebtn" target="_blank" rel="noopener">
+      <a href="https://t.me/MOVIE_LOVERZZ" class="ebtn" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         Support Group
       </a>
@@ -1691,7 +1691,7 @@ error_tmplt = """<!DOCTYPE html>
 </main>
 
 <footer>
-  <p>Powered by <a href="https://t.me/Nova_Filter_Official" class="ha-link" target="_blank" rel="noopener">Nova Filter Bot</a></p>
+  <p>Powered by <a href="https://t.me/movie_loverzz" class="ha-link" target="_blank" rel="noopener">MOVIE LOVERZ</a></p>
 </footer>
 </body>
 </html>
